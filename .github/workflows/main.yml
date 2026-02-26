@@ -1,0 +1,31 @@
+name: KOL Campaign Automation
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # Runs every 5 minutes
+  workflow_dispatch:       # Manual trigger button
+
+jobs:
+  kol-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Run Automation
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node dist/index.js
